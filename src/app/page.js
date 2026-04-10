@@ -1,65 +1,173 @@
-import Image from "next/image";
+"use client";
+
+import { useState } from "react";
+import RadioButton from "../components/RadioButton";
 
 export default function Home() {
+  const [option, setOption] = useState("today");
+  const [date, setDate] = useState("");
+  const [count, setCount] = useState(1);
+
+  const [data, setData] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+
+  const fetchAPOD = async () => {
+    setLoading(true);
+    setError(null);
+
+    let url = `https://api.nasa.gov/planetary/apod?api_key=tUyOGTVAZK5pgHm9vWHD0w3T483PCAbjk4JfTxgD`;
+
+    if (option === "date") url += `&date=${date}`;
+    if (option === "count") url += `&count=${count}`;
+
+    try {
+      const res = await fetch(url);
+      const result = await res.json();
+      setData(result);
+    } catch {
+      setError("Error al consultar la API");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const clearData = () => {
+    setData(null);
+    setDate("");
+    setCount(1);
+  };
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.js file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+    <div style={styles.container}>
+      <h1 style={styles.title}>🚀 NASA APOD</h1>
+
+      <div style={styles.card}>
+        {/* Radios */}
+        <div style={styles.radioGroup}>
+          <RadioButton label="Today" value="today" checked={option==="today"} onChange={()=>setOption("today")} />
+          <RadioButton label="Date" value="date" checked={option==="date"} onChange={()=>setOption("date")} />
+          <RadioButton label="Count" value="count" checked={option==="count"} onChange={()=>setOption("count")} />
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+
+        {/* Inputs */}
+        {option === "date" && (
+          <input style={styles.input} type="date" value={date} onChange={(e)=>setDate(e.target.value)} />
+        )}
+
+        {option === "count" && (
+          <input style={styles.input} type="number" min="1" max="10" value={count} onChange={(e)=>setCount(e.target.value)} />
+        )}
+
+        {/* Botones */}
+        <div style={styles.buttons}>
+          <button style={styles.buttonPrimary} onClick={fetchAPOD}>Consultar</button>
+          <button style={styles.buttonSecondary} onClick={clearData}>Limpiar</button>
         </div>
-      </main>
+      </div>
+
+      {/* Estados */}
+      {loading && <p style={styles.info}>Cargando...</p>}
+      {error && <p style={styles.error}>{error}</p>}
+
+      {/* Resultados */}
+      <div style={styles.results}>
+        {data &&
+          (Array.isArray(data) ? data : [data]).map((item, index) => (
+            <div key={index} style={styles.resultCard}>
+              <h2>{item.title}</h2>
+              <p>{item.date}</p>
+
+              {item.media_type === "image" ? (
+                <img src={item.url} alt={item.title} style={styles.image} />
+              ) : (
+                <iframe src={item.url} title={item.title} style={styles.video}></iframe>
+              )}
+
+              <p>{item.explanation}</p>
+            </div>
+          ))}
+      </div>
     </div>
   );
 }
+
+const styles = {
+  container: {
+    fontFamily: "Arial",
+    background: "#0b0f19",
+    color: "white",
+    minHeight: "100vh",
+    padding: "20px"
+  },
+  title: {
+    textAlign: "center",
+    marginBottom: "20px"
+  },
+  card: {
+    background: "#1c2333",
+    padding: "20px",
+    borderRadius: "10px",
+    maxWidth: "600px",
+    margin: "auto",
+    boxShadow: "0 0 10px rgba(0,0,0,0.5)"
+  },
+  radioGroup: {
+    marginBottom: "15px"
+  },
+  input: {
+    padding: "8px",
+    borderRadius: "5px",
+    border: "none",
+    marginBottom: "10px",
+    width: "100%"
+  },
+  buttons: {
+    display: "flex",
+    gap: "10px"
+  },
+  buttonPrimary: {
+    padding: "10px",
+    background: "#0070f3",
+    color: "white",
+    border: "none",
+    borderRadius: "5px",
+    cursor: "pointer"
+  },
+  buttonSecondary: {
+    padding: "10px",
+    background: "#444",
+    color: "white",
+    border: "none",
+    borderRadius: "5px",
+    cursor: "pointer"
+  },
+  results: {
+    marginTop: "30px",
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center"
+  },
+  resultCard: {
+    background: "#1c2333",
+    padding: "20px",
+    borderRadius: "10px",
+    marginBottom: "20px",
+    maxWidth: "600px"
+  },
+  image: {
+    width: "100%",
+    borderRadius: "10px"
+  },
+  video: {
+    width: "100%",
+    height: "300px"
+  },
+  info: {
+    textAlign: "center"
+  },
+  error: {
+    color: "red",
+    textAlign: "center"
+  }
+};

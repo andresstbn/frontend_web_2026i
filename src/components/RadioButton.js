@@ -6,7 +6,6 @@ export default function RadioButton({
   className = "",
   ...props
 }) {
-  // id y name son opcionales, pero se recomiendan en formularios para accesibilidad y envío de datos.
   return (
     <label htmlFor={id || undefined} className={`inline-flex cursor-pointer items-center gap-2 ${className}`}>
       <input

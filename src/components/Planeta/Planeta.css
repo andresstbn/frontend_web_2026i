@@ -1,0 +1,99 @@
+.contenedor-FotoDia {
+    justify-self: center;
+    border: 10px solid wheat;
+    margin-top: 20px;
+    width: 1000px;
+    display: grid;
+    background-color: rgb(113, 110, 102);
+    gap: 10px;
+    box-sizing: border-box;
+    text-align: center;
+}
+
+.contenedor-FotoDia.con-descripcion {
+    grid-template-columns: 2fr 1fr;
+}
+
+.contenedor-FotoDia.sin-descripcion {
+    grid-template-columns: 1fr;
+}
+
+.contenedor-FotoDia.sin-descripcion .textoImagen-FotoDia {
+    grid-column: 1 / -1;
+}
+
+.textoImagen-FotoDia {
+  margin-top: 10px;  
+  display: flex;
+  flex-direction: column;
+  gap: 10px; 
+}   
+
+.fecha-FotoDia{
+    font-size: medium;
+}
+
+.titulo-FotoDia {
+    font-size: larger;
+    font-weight: bolder;
+}
+
+.contenedor-imagen {
+  position: relative;
+  width: 80%;
+  align-self: center;
+}
+
+.imagen-FotoDia {
+  width: 100%;
+  height: auto;
+  border-radius: 10px;
+  display: block;
+}
+
+.autor-FotoDia{
+    position: absolute;
+    bottom: 5px;
+    right: 10px;
+    color: white;
+    background: rgba(0, 0, 0, 0.5);
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-size: small;
+}
+
+.botones-FotoDia {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+}
+
+.texto-FotoDia {
+    text-align: left;
+}
+
+.botones-FotoDia > * {
+    border: 1px solid wheat;
+    font-size: large;
+    background-color: black;
+    height: 50px;
+    transition: 0.3s;
+} 
+
+.botones-FotoDia > *:hover {
+    border: green;
+    background-color: blueviolet;
+    color: aqua;
+    transform: scale(1.05);
+    cursor: pointer;
+    border-radius: var(--radius-md);
+} 
+
+.descripcion-FotoDia {
+    margin-right: 10px;
+    align-self: center;
+    color: #2C3E50;
+    font-weight: bolder;
+    text-align: start;
+}
+
+

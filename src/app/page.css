@@ -1,0 +1,82 @@
+.Principal {
+    width: 40%;
+    height: auto;
+    margin-inline: auto;
+    justify-content: center;
+
+    background-color: #222;
+    display: flex;
+    flex-direction: column;
+    margin-top: 20px;
+    border-radius: var(--radius-md);
+    border: 2px solid #ff4d00;
+    text-align: center;
+    font-size: var(--text-lg);
+    row-gap: 10px;
+    padding: 20px;
+}
+
+.Principal:hover {
+    border-color: rgb(11, 83, 11);
+}
+
+.titulo-Principal {
+    margin-top: 10px;
+    font-size: var(--text-2xl);
+    font-weight: 700;
+    color: white;
+}
+
+/* RADIO BUTTONS */
+.Principal label {
+    color: white;
+    font-size: 14px;
+    margin: 5px;
+}
+
+.Principal input[type="radio"] {
+    margin-right: 5px;
+}
+
+/* INPUTS */
+.Principal input[type="date"],
+.Principal input[type="number"] {
+    padding: 6px;
+    border-radius: 5px;
+    border: none;
+    outline: none;
+}
+
+/* BOTONES */
+.botonBuscar-Principal {
+    height: 50px;
+    width: 120px;
+    align-self: center;
+    background-color: rgb(0, 0, 0);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    color: white;
+    cursor: pointer;
+    transition: 0.3s;
+    border: none;
+    border-radius: 6px;
+}
+
+.botonBuscar-Principal:hover {
+    background-color: rgba(4, 114, 74, 0.532);
+    transform: scale(1.05);
+}
+
+/* ESTADOS */
+.estado {
+    color: white;
+    text-align: center;
+    margin-top: 10px;
+}
+
+.estado-error {
+    color: red;
+    font-weight: bold;
+}

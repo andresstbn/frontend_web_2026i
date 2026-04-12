@@ -9,9 +9,11 @@ export default function ApodCard({ data }) {
  
   return (
     <div style={{
+      width: "100%",
+      boxSizing: "border-box",
       border: "1px solid #e5e7eb",
       borderRadius: "12px",
-      padding: "24px",
+      padding: "clamp(16px, 4vw, 24px)",
       marginBottom: "16px",
       background: "#fff"
     }}>
@@ -26,7 +28,7 @@ export default function ApodCard({ data }) {
         <img
           src={data.url}
           alt={data.title}
-          style={{ width: "100%", maxWidth: "600px", borderRadius: "8px", display: "block", margin: "0 auto 16px" }}
+          style={{ width: "100%", maxWidth: "100%", height: "auto", borderRadius: "8px", display: "block", margin: "0 0 16px" }}
         />
       ) : (
         <a

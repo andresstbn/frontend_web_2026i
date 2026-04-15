@@ -9,7 +9,7 @@ export default function Input({
   return (
     <div className="w-full">
       {label && (
-        <label htmlFor={id || undefined} className="mb-1 block text-sm font-medium text-gray-700">
+        <label htmlFor={id || undefined} className="mb-2 block text-xl font-bold text-black">
           {label}
         </label>
       )}

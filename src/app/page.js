@@ -1,65 +1,130 @@
+"use client"
+import { useState } from 'react'
+
 import Image from "next/image";
+import RadioButton from "@/components/RadioButton";
+import Button from "@/components/Button";
 
 export default function Home() {
+  const [opcion, setOpcion] = useState('today')
+  const [fecha, setFecha] = useState('')
+  const [count, setCount] = useState(1)
+  const [resultados, setResultados] = useState([])
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState(null)
+
+  const consultar = () => {
+  let url = `https://api.nasa.gov/planetary/apod?api_key=ZcSha6lIwgPwoiEFHkF38ExMgTPHgAXKnSvn54DZ`
+
+  if (opcion === 'date') url += `&date=${fecha}`
+  if (opcion === 'count') url += `&count=${count}`
+
+  console.log("URL:", url)  // ← verifica en consola que la key está bien
+
+  fetch(url)
+    .then(res => res.json())
+    .then(data => {
+      console.log("DATA:", data)  // ← verifica que llegan datos
+      setResultados(Array.isArray(data) ? data : [data])
+    })
+}
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.js file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
+    <> 
+      <main className="m-8">
+        <h1 className="text-4xl">NASA APOD</h1>
+
+        <section className="m-8 bg-gray-200 p-4">
+          <h2 className="text-blue-950">1. Modo de consulta</h2>  
+
+          <div id="division_1" className="m-2 flex gap-8">
+            <RadioButton
+              onChange={() => setOpcion('today')}
+              checked={opcion === 'today'}
+              label="Foto de hoy" 
             />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
+
+            <RadioButton
+              onChange={() => setOpcion('date')}
+              checked={opcion === 'date'}
+              label="Fecha específica"
+            />
+
+            <RadioButton
+              onChange={() => setOpcion('count')}
+              checked={opcion === 'count'}
+              label="Aleatorias (count)"
+            />
+          </div>
+
+          
+          <div className="m-2">
+            {opcion === 'date' && (
+              <input
+                type="date"
+                value={fecha}
+                onChange={(e) => setFecha(e.target.value)}
+                className="border p-2 rounded"
+              />
+            )}
+
+            {opcion === 'count' && (
+              <input
+                type="number"
+                min="1"
+                max="10"
+                value={count}
+                onChange={(e) => setCount(e.target.value)}
+                className="border p-2 rounded"
+              />
+            )}
+          </div>
+
+          <div id="division_2" className="flex gap-8">
+            <button
+              onClick={consultar}
+              className="bg-blue-600 text-white rounded-xl p-2 mt-4 font-bold"
+            >
+              Consultar NASA APOD
+            </button>
+
+            <button
+              onClick={() => setResultados([])}
+              className="bg-amber-50 rounded-xl p-2 mt-4 font-bold"
+            >
+              Limpiar Resultados
+            </button>
+          </div>
+        </section>
+
+        {loading && <p>Cargando...</p>}
+        {error && <p className="text-red-500">{error}</p>}
+       
+        <section className="m-8">
+          {resultados.map((item, index) => (
+            <div key={index} className="mb-8 border p-4 rounded bg-white">
+              <h3 className="text-xl font-bold">{item.title}</h3>
+              <p className="text-gray-600">{item.date}</p>
+
+              {item.media_type === "image" ? (
+                <img
+                  src={item.url}
+                  alt={item.title}
+                  className="w-96 mt-2 rounded"
+                />
+              ) : (
+                <iframe
+                  src={item.url}
+                  className="w-96 h-64 mt-2"
+                ></iframe>
+              )}
+
+              <p className="mt-2">{item.explanation}</p>
+            </div>
+          ))}
+        </section>
+
       </main>
-    </div>
+    </>
   );
 }

@@ -1,10 +1,12 @@
 "use client";
 import {Form, Result } from "@/components";
+import Title from "@/components/Title";
 import { useState } from "react";
 
 export default function Home() {
   const [response, setResponse] = useState(null)
   const [error, setError] = useState(null)
+  const [loading, setLoading] = useState(false)
 
   return (
       <main className="w-full max-w-3xl py-8 px-12 flex flex-1 flex-col items-center bg-white dark:bg-black sm:items-start">
@@ -17,12 +19,16 @@ export default function Home() {
             setResponse={setResponse}
             error={error}
             setError={setError}
-          ></Form>
+            setLoading={setLoading}
+          />
 
-          {!error && response && 
-            (Array.isArray(response)) ? 
-            response.map((res, index) => <Result key={index} response={res}></Result>) :   
-            <Result response={response}></Result>}
+          {loading && <Title title={"Cargando..."}/>}
+
+          {!error && response && (
+            Array.isArray(response)
+            ? response.map((res) => <Result key={res.date} response={res}/>)
+            : <Result response={response}/>
+          )}
         </div>
       </main>
   );

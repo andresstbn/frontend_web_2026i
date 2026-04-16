@@ -11,42 +11,36 @@ export default function Form({
   title,
   setResponse,
   error,
-  setError
+  setError,
+  setLoading
 })
 { 
   const [opcion, setOpcion] = useState("today")
-  const [date, setDate] = useState("null")
+  const [date, setDate] = useState("")
   const [count, setCount] = useState(1)
   
   async function consumirAPI(){
-    const urlAPI = "https://api.nasa.gov/planetary/apod?api_key=" 
-    let response
-    switch (opcion){
-      case "today":
-        response = await fetch(`${urlAPI}${apiKey}`)
-        break
-      
-      case "date":
-        response = await fetch(`${urlAPI}${apiKey}&date=${date}`)
-        break
-          
-      case "count":
-        if(count<1 || count>10){
-          setError("Usa el rango valido")
-          return
-        }
-        response = await fetch(`${urlAPI}${apiKey}&count=${count}`)
-        break
+    setLoading(true)
 
-      default:
-        setError('Escoge una opcion de consulta valida')
+    let urlAPI = `https://api.nasa.gov/planetary/apod?api_key=${apiKey}` 
+    if(opcion==="date")urlAPI+=`&date=${date}`
+    else if(opcion==="count"){
+      if(count<1 || count>10){
+        setError("Usa el rango valido")
+        setLoading(false)
         return
+      }
+      urlAPI+=`&count=${count}`
     }
+            
+    let response = await fetch(urlAPI)
     let data = await response.json()
+
     if(data.msg)setError(data.msg)
     else setError(null)
-    console.log(data)
+
     setResponse(data)
+    setLoading(false)
   }
   
   return(
@@ -63,7 +57,7 @@ export default function Form({
             label="Foto de hoy"
             checked={opcion === 'today'}
             onChange={() => setOpcion('today')}
-            ></RadioButton> 
+          /> 
           <RadioButton
             id="mode-date"
             name="mode"
@@ -71,7 +65,7 @@ export default function Form({
             label="Fecha especifica"
             checked={opcion === 'date'}
             onChange={() => setOpcion('date')}
-            ></RadioButton>
+          />
           <RadioButton
             id="mode-count"
             name="mode"
@@ -79,7 +73,7 @@ export default function Form({
             label="Aleatorias (count)"
             checked={opcion === 'count'}
             onChange={() => setOpcion('count')}
-            ></RadioButton>
+          />
         </div>
 
         {opcion==="date" && 
@@ -89,20 +83,22 @@ export default function Form({
             className="mb-5"
             onChange={(e) => setDate(e.target.value)}
             error={error}
-          ></Input>}
+          />
+        }
 
         {opcion==="count" && 
           <Input
             label='Cantidad(1-10):'
             type ="number"    
             className="mb-5"
-            onChange={(e) => setCount(e.target.value)}  
+            onChange={(e) => setCount(Number(e.target.value))}  
             error={error}
-          ></Input>}
-          
+          />
+        }
+
         <div className="flex gap-2">
-          <Button children={"Consultar NASA APOD"} onClick={consumirAPI}></Button>
-          <Button children={"Limpiar resultado"} variant="secondary" onClick={() => setResponse(null)}></Button>
+          <Button children={"Consultar NASA APOD"} onClick={consumirAPI}/>
+          <Button children={"Limpiar resultado"} variant="secondary" onClick={() => setResponse(null)}/>
         </div>
       </form>
     </div>

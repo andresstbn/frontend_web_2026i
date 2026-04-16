@@ -14,22 +14,20 @@ export default function Home() {
   const [error, setError] = useState(null)
 
   const consultar = () => {
-    setLoading(true)
-    setError(null)
+  let url = `https://api.nasa.gov/planetary/apod?api_key=ZcSha6lIwgPwoiEFHkF38ExMgTPHgAXKnSvn54DZ`
 
-    let url = `https://api.nasa.gov/planetary/apod?api_key=DEMO_KEY`
+  if (opcion === 'date') url += `&date=${fecha}`
+  if (opcion === 'count') url += `&count=${count}`
 
-    if (opcion === 'date') url += `&date=${fecha}`
-    if (opcion === 'count') url += `&count=${count}`
+  console.log("URL:", url)  // ← verifica en consola que la key está bien
 
-    fetch(url)
-      .then(res => res.json())
-      .then(data => {
-        setResultados(Array.isArray(data) ? data : [data])
-      })
-      .catch(() => setError("Error al consultar la API"))
-      .finally(() => setLoading(false))
-  }
+  fetch(url)
+    .then(res => res.json())
+    .then(data => {
+      console.log("DATA:", data)  // ← verifica que llegan datos
+      setResultados(Array.isArray(data) ? data : [data])
+    })
+}
 
   return (
     <> 

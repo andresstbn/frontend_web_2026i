@@ -1,65 +1,118 @@
-import Image from "next/image";
+"use client";
+
+import Button from "../components/Button";
+import FotoHoy from "./FotoHoy";
+import { useEffect, useState } from "react";
+import RadioButton from "../components/RadioButton";
+import Input from "../components/Input";
+import FotoEspecifica from "./FotoEspecifica";
+import FotoAleatoria from "./FotoAleatoria";
 
 export default function Home() {
+  const api_key = "PhdLWZYYBEbWGL4W4BoSspD4iEh9CrACKPKVtqhB"
+  const [tipo, setTipo] = useState("");
+  const [fecha, setFecha] = useState("");
+  const [number, setNumber] = useState();
+  const [data, setData] = useState(null);
+  const [datos, setDatos] = useState([]);
+  const [error, setError] = useState(false);
+  const [mostrar, setMostrar] = useState(false);
+  const [loading, setLoading] = useState(false);
+
+
+  const getApiKey = async () => {
+    setData(null);
+    setDatos(null);
+    setLoading(true);
+    setError(false)
+    let resul
+    try {
+      if (tipo === "hoy") {
+        const respuesta = await fetch(`https://api.nasa.gov/planetary/apod?api_key=${api_key}`)
+        resul = await respuesta.json()
+        setData(resul)
+      } else if (tipo === "especifica") {
+        const respuesta = await fetch(`https://api.nasa.gov/planetary/apod?api_key=${api_key}&date=${fecha}`)
+        resul = await respuesta.json()
+        setData(resul)
+      } else if (tipo === "aleatorias") {
+        const respuesta = await fetch(`https://api.nasa.gov/planetary/apod?api_key=${api_key}&count=${number}`)
+        resul = await respuesta.json()
+        if (!Array.isArray(resul)) {
+          resul = [resul];
+        }
+
+        setDatos(resul);
+        console.log(datos)
+      }
+    } catch (err) {
+      setError(true);
+    } finally {
+      console.log("hice consulta")
+      setLoading(false);
+      console.log(data)
+    }
+  }
+
+
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.js file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+    <>
+      <div className="border border-gray-300 m-10 rounded-xl">
+        <h1 className="mx-10 mt-5 font-semibold text-2xl ">Ejercicio React: NASA APOD</h1>
+        <div className="mx-10 mt-5 font-semibold text-2xl bg-gray-100 border rounded-xl border-gray-300">
+          <h1 className="mx-5 mt-5 font-semibold text-xs ">1) Modo de consulta(radio)</h1>
+          <div className="text-xs mx-5 mt-3">
+            <RadioButton label="Foto de hoy" name="tipoFoto" onChange={(e) => (setTipo("hoy"), setMostrar(false))} className="pr-2"></RadioButton>
+
+            <RadioButton label="Foto específica" name="tipoFoto" onChange={(e) => (setTipo("especifica"), setMostrar(false))} className="pr-2"></RadioButton>
+
+            <RadioButton label="Aleatorias" name="tipoFoto" onChange={(e) => (setTipo("aleatorias"), setMostrar(false))}></RadioButton>
+
+            {tipo === "especifica" && (
+              <div className="py-4">
+                <Input type="date" onChange={(e) => setFecha(e.target.value)}></Input>
+              </div>
+            )}
+
+            {tipo === "aleatorias" && (
+              <div className="py-4">
+                <Input type="number" onChange={(e) => setNumber(e.target.value)}></Input>
+              </div>
+            )}
+
+            <div className="flex gap-10 py-4">
+              <Button children={"Consultar NASA APOD"} onClick={() => {
+                getApiKey();
+                setMostrar(true);
+              }}></Button>
+              <Button children={"Limpiar Resultado"} variant="secondary" onClick={() => setMostrar(false)}></Button>
+            </div>
+            <div>
+              {tipo === "hoy" && (
+                <div className="mt-10">
+                  <p className="opacity-50 my-5">https://api.nasa.gov/planetary/apod?api_key={api_key}</p>
+                </div>
+              )}
+            </div>
+          </div>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+        <div>
+          {loading && <p>Cargando...</p>}
+
+          {error && (
+            <p className="text-red-500">
+              Error al consultar la API. Vuelve a intentar.
+            </p>
+          )}
+
+          {data && mostrar && tipo === "hoy" && <FotoHoy data={data} />}
+          {data && mostrar && tipo === "especifica" && <FotoEspecifica data={data} />}
+          {datos && mostrar && tipo === "aleatorias" && <FotoAleatoria data={datos} />}
+
+
         </div>
-      </main>
-    </div>
+      </div>
+    </>
   );
 }

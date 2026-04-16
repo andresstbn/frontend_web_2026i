@@ -2,9 +2,5 @@ export default function Title({
     title,
     className = "text-xl font-bold"
 }){
-    return(
-        <>
-            <h2 className={className}>{title}</h2>
-        </>    
-    )
+    return(<h2 className={className}>{title}</h2>)
 }

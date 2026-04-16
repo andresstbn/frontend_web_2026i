@@ -12,15 +12,17 @@ export default function Home() {
           <h1 className="max-w-s text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
             Ejercicio React: NASA APOD 
           </h1>
+          
           <Form title="Consulta la API de NASA APOD" 
             setResponse={setResponse}
             error={error}
             setError={setError}
           ></Form>
-          <Result title="Resultado"
-            response={response} 
-            error={error}
-          ></Result>
+
+          {!error && response && 
+            (Array.isArray(response)) ? 
+            response.map((res, index) => <Result key={index} response={res}></Result>) :   
+            <Result response={response}></Result>}
         </div>
       </main>
   );

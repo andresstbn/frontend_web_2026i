@@ -7,8 +7,9 @@ export default function Home() {
   const [isDrawing, setIsDrawing] = useState(false);
   const lastPointRef = useRef({ x: 0, y: 0 });
 
-  const STROKE_COLOR = "#1f2937";
-  const STROKE_WIDTH = 4;
+  // const [strokeColor, setStrokeColor] = useState("#1f2937");
+  const strokeColor = useRef("#1f2937")
+  const strokeWidth = useRef(4);
 
   // Preparamos el contexto del canvas una vez al montar la pagina.
   useEffect(() => {
@@ -17,9 +18,9 @@ export default function Home() {
 
     context.lineCap = "round";
     context.lineJoin = "round";
-    context.strokeStyle = STROKE_COLOR;
-    context.lineWidth = STROKE_WIDTH;
-  }, [STROKE_COLOR, STROKE_WIDTH]);
+    context.strokeStyle = strokeColor.current;
+    context.lineWidth = strokeWidth.current;
+  }, []);
 
   const getMousePosition = (event) => {
     const canvas = canvasRef.current;
@@ -65,6 +66,19 @@ export default function Home() {
     context.clearRect(0, 0, canvas.width, canvas.height);
   };
 
+  const setColor = (e) => {
+    strokeColor.current = e.target.value
+    const canvas = canvasRef.current;
+    const context = canvas.getContext("2d");
+    context.strokeStyle = strokeColor.current
+  }
+
+  const setWidth = (e) => {
+    strokeWidth.current = e.target.value
+    const canvas = canvasRef.current;
+    const context = canvas.getContext("2d");
+    context.lineWidth = Number(strokeWidth.current)
+  }
   // TODO: Permitir cambiar el color del trazo.
   // TODO: Permitir cambiar el grosor del trazo.
   // TODO: Agregar un borrador.
@@ -79,6 +93,9 @@ export default function Home() {
           Presiona el mouse sobre el canvas para iniciar el trazo, mueve el cursor para dibujar y suelta para
           detener.
         </p>
+        {/* <input type="color" onChange={(e) => {setStrokeColor(e.target.value)}}></input> */}
+        <input type="color" onChange={setColor}></input>
+        <input type="number" min="1" max="5" onChange={setWidth}></input>
 
         <canvas
           ref={canvasRef}

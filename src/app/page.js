@@ -1,65 +1,106 @@
-import Image from "next/image";
+"use client";
+
+import { useEffect, useRef, useState } from "react";
 
 export default function Home() {
+  const canvasRef = useRef(null);
+  const [isDrawing, setIsDrawing] = useState(false);
+  const lastPointRef = useRef({ x: 0, y: 0 });
+
+  const STROKE_COLOR = "#1f2937";
+  const STROKE_WIDTH = 4;
+
+  // Preparamos el contexto del canvas una vez al montar la pagina.
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    const context = canvas.getContext("2d");
+
+    context.lineCap = "round";
+    context.lineJoin = "round";
+    context.strokeStyle = STROKE_COLOR;
+    context.lineWidth = STROKE_WIDTH;
+  }, [STROKE_COLOR, STROKE_WIDTH]);
+
+  const getMousePosition = (event) => {
+    const canvas = canvasRef.current;
+    const rect = canvas.getBoundingClientRect();
+
+    return {
+      x: event.clientX - rect.left,
+      y: event.clientY - rect.top,
+    };
+  };
+
+  // Inicio del dibujo: cuando se presiona el mouse dentro del canvas.
+  const handleMouseDown = (event) => {
+    const startPoint = getMousePosition(event);
+    lastPointRef.current = startPoint;
+    setIsDrawing(true);
+  };
+
+  // Movimiento del dibujo: trazamos una linea mientras el mouse se mueve presionado.
+  const handleMouseMove = (event) => {
+    if (!isDrawing) return;
+
+    const canvas = canvasRef.current;
+    const context = canvas.getContext("2d");
+    const currentPoint = getMousePosition(event);
+
+    context.beginPath();
+    context.moveTo(lastPointRef.current.x, lastPointRef.current.y);
+    context.lineTo(currentPoint.x, currentPoint.y);
+    context.stroke();
+
+    lastPointRef.current = currentPoint;
+  };
+
+  // Fin del dibujo: se detiene al soltar el mouse o al salir del canvas.
+  const handleMouseUpOrLeave = () => {
+    setIsDrawing(false);
+  };
+
+  const clearCanvas = () => {
+    const canvas = canvasRef.current;
+    const context = canvas.getContext("2d");
+    context.clearRect(0, 0, canvas.width, canvas.height);
+  };
+
+  // TODO: Permitir cambiar el color del trazo.
+  // TODO: Permitir cambiar el grosor del trazo.
+  // TODO: Agregar un borrador.
+  // TODO: Soportar dibujo táctil para pantallas touch.
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
+    <main className="min-h-screen bg-slate-100 px-6 py-10">
+      <section className="mx-auto flex w-full max-w-3xl flex-col gap-6 rounded-xl bg-white p-6 shadow-sm">
+        <h1 className="text-3xl font-bold text-slate-900">Mini Paint</h1>
+
+        <p className="text-slate-700">
+          Presiona el mouse sobre el canvas para iniciar el trazo, mueve el cursor para dibujar y suelta para
+          detener.
+        </p>
+
+        <canvas
+          ref={canvasRef}
+          width={900}
+          height={500}
+          onMouseDown={handleMouseDown}
+          onMouseMove={handleMouseMove}
+          onMouseUp={handleMouseUpOrLeave}
+          onMouseLeave={handleMouseUpOrLeave}
+          className="w-full rounded-lg border border-slate-300 bg-white"
         />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.js file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+
+        <div>
+          <button
+            type="button"
+            onClick={clearCanvas}
+            className="rounded-md bg-slate-900 px-4 py-2 text-white hover:bg-slate-700"
           >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+            Limpiar canvas
+          </button>
         </div>
-      </main>
-    </div>
+      </section>
+    </main>
   );
 }

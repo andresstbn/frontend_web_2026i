@@ -1,4 +1,4 @@
-export default function Checkbox({
+function Checkbox({
   id,
   name,
   value,
@@ -22,3 +22,5 @@ export default function Checkbox({
     </label>
   );
 }
+
+export {Checkbox}

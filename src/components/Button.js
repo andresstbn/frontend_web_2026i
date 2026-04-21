@@ -1,4 +1,4 @@
-export default function Button({
+function Button({
   children,
   type = "button",
   variant = "primary",
@@ -16,10 +16,12 @@ export default function Button({
   return (
     <button
       type={type}
-      className={`rounded-lg px-4 py-2 text-sm font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-60 ${variantClasses} ${className}`}
+      className={`rounded-lg px-4 py-2 text-sm font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-60 cursor-pointer ${variantClasses} ${className}`}
       {...props}
     >
       {children}
     </button>
   );
 }
+
+export {Button}

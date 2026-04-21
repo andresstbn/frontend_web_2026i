@@ -1,4 +1,4 @@
-export default function RadioButton({
+function RadioButton({
   id,
   name,
   value,
@@ -17,7 +17,9 @@ export default function RadioButton({
         className="h-4 w-4 border-gray-300 text-blue-600 focus:ring-blue-500"
         {...props}
       />
-      <span className="text-sm text-gray-800">{label}</span>
+      <span className="text-sm text-gray-800 dark:text-white">{label}</span>
     </label>
   );
 }
+
+export {RadioButton}

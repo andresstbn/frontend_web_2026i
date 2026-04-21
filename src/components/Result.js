@@ -22,17 +22,9 @@ function Result({
                     alt="Imagen NASA APOD"
                 />
             ): (
-                <>
-                    <span>URL Media: 
-                        <a href={response.url} target="_blank" className="font-bold text-blue-600 dark:text-blue-200"> {response.url}</a>
-                    </span>
-                    <iframe 
-                        src={response.url}
-                        title="Media"
-                        className="w-full h-96"
-                        allowFullScreen
-                    />
-                </>
+                <span>URL Media: 
+                    <a href={response.url} target="_blank" className="font-bold text-blue-600 dark:text-blue-200"> {response.url}</a>
+                </span>
             )}
 
             <span className="text-xs text-end ml-10">

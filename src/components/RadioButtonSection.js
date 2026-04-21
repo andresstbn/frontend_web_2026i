@@ -1,12 +1,15 @@
 import { RadioButton } from "@/components"
+import { ApodContext } from "@/hooks/ApodContext"
+import { useContext } from "react"
 
 function RadioButtonSection({
     radioBotones,
     className = "flex my-3 gap-2",
-    state,
-    setState,
     ...props
 }){
+
+    let {opcion, setOpcion} = useContext(ApodContext)
+    
     return(
         <div className={className} {...props}>
             {radioBotones.map(({value, label, name}) => (
@@ -16,8 +19,8 @@ function RadioButtonSection({
                     name={`${name}`}
                     value={`${value}`}
                     label={`${label}`}
-                    checked={state === `${value}`}
-                    onChange={() => setState(`${value}`)}
+                    checked={opcion === `${value}`}
+                    onChange={() => setOpcion(`${value}`)}
                 />
             ))}
         </div>

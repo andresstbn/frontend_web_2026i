@@ -1,17 +1,20 @@
 import { Button, Form, Input, MainTitle, RadioButtonSection, Result, Section, SubTitle, Title } from "@/components";
+import { ApodContext } from "@/hooks/ApodContext";
+import { useContext } from "react";
 
 
-export default function PageUI({
-    response,
-    error,
-    loading,
-    opcion,
-    setOpcion,
-    setInputValue,
-    consumirAPI,
-    limpiarResultado
-}) {
+export default function PageUI() {
     
+    let {
+        response,
+        error,
+        loading,
+        opcion,
+        setInputValue,
+        consumirAPI,
+        limpiarResultado
+    } = useContext(ApodContext)
+
     return (
         <main className="w-full max-w-3xl py-8 px-12 flex flex-1 flex-col items-center bg-white dark:bg-black sm:items-start">
             <div className="w-full p-10 grow flex flex-col items-center gap-6 text-center border rounded-xl shadow-l sm:items-start sm:text-left dark:border-white">
@@ -26,8 +29,6 @@ export default function PageUI({
                                 { name: "mode", value: "date", label: "Fecha especifica" },
                                 { name: "mode", value: "count", label: "Aleatorias (count)" },
                             ]}
-                            state={opcion}
-                            setState={setOpcion}
                         />
 
                         {(opcion==="date" || opcion==="count") &&     
